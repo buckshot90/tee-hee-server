@@ -28,3 +28,4 @@
 {"req":{"method":"GET","url":"/api/test/1"},"level":"error","message":"{ [Error: Not Found] status: 404 }","label":"TeeHee\\app.js","timestamp":"2014-10-27T13:01:59.101Z"}
 {"req":{"method":"GET","url":"/api/test/1"},"level":"error","message":"{ [Error: Not Found] status: 404 }","label":"TeeHee\\app.js","timestamp":"2014-10-27T13:03:58.493Z"}
 {"req":{"method":"GET","url":"/api/test/1"},"level":"error","message":"{ [Error: Not Found] status: 404 }","label":"TeeHee\\app.js","timestamp":"2014-10-27T13:45:19.064Z"}
+{"req":{"method":"GET","url":"/","body":{}},"level":"error","message":"{ [Error: Not Found] status: 404 }","label":"app\\app.js","timestamp":"2014-10-27T20:20:48.647Z"}
