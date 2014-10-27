@@ -2,6 +2,19 @@
   "env": "development",
   "port": 3000,
   "logDir": "./logs",
+  "mongoose": {
+    "uri": "mongodb://localhost/teehee",
+    "options": {}
+  },
+  "enums": {
+    "languages": {
+      "values": [
+        "ru",
+        "en"
+      ],
+      "message": "language validator failed for path `{PATH}` with value `{VALUE}`"
+    }
+  },
   "apiVersion": "1.0.0",
   "routes": {
     "1.0.0": {
