@@ -38,7 +38,7 @@ app.use(function (err, req, res, next) {
             error: err
         });
 
-        log.error(err, {req: {method: req.method, url: req.url}});
+        log.error(err, {req: {method: req.method, url: req.url, body: req.body}});
     } else {
         res.send({
             message: err.message,
@@ -49,9 +49,8 @@ app.use(function (err, req, res, next) {
 });
 
 
-
 app.set('port', config.get('port'));
-var server = app.listen(app.get('port'), function() {
+var server = app.listen(app.get('port'), function () {
     log.info('Express server listening on port ' + server.address().port);
 });
 
