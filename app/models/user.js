@@ -8,7 +8,7 @@ var schema = new Schema({
     hashedPassword: {type: String, required: true},
     salt: {type: String, required: true},
     created: {type: Date, default: Date.now},
-    categories: [{type: Schema.ObjectId, ref: 'Category'}]
+    categories: [{type: Schema.Types.ObjectId, ref: 'Category'}]
 });
 
 schema.methods.encryptPassword = function (password) {
