@@ -1,7 +1,7 @@
 var winston = require('winston');
 var fs = require('fs');
 var path = require('path');
-var config = require('../config');
+var config = require('../config/config');
 
 var LOG_DIR = config.get('logDir');
 var ENV = config.get('env');

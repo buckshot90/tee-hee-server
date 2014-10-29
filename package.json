@@ -14,7 +14,8 @@
     "morgan": "*",
     "nconf": "*",
     "mongoose": "*",
-    "compression": "*"
+    "compression": "*",
+    "extend": "*"
   },
   "main": "app.js",
   "author": "",

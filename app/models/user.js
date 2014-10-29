@@ -35,4 +35,9 @@ User.qfind = function (params) {
     return Q.nbind(User.find, User)(params);
 };
 
+User.qfindOne = function (params) {
+    return Q.nbind(User.findOne, User)(params);
+};
+
+
 module.exports = User;

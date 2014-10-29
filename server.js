@@ -1,5 +1,5 @@
 var app = require('./app/app');
-var config = require('./app/config');
+var config = require('./app/config/config');
 var log = require('./app/libs/log')(module);
 
 app.set('port', config.get('port'));

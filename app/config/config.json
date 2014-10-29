@@ -20,6 +20,9 @@
     "1.0.0": {
       "/users/": {
         "get": "usersController.index"
+      },
+      "/users/:id":{
+        "get":"usersController.getById"
       }
     }
   }
