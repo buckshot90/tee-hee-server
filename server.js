@@ -1,6 +1,6 @@
-var app = require('./app');
-var config = require('./config');
-var log = require('./utils/log')(module);
+var app = require('./app/app');
+var config = require('./app/config');
+var log = require('./app/libs/log')(module);
 
 app.set('port', config.get('port'));
 

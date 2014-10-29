@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var mongoose = require('../utils/mongoose');
+var mongoose = require('./mongoose');
 var config = require('../config');
 
 var Schema = mongoose.Schema;

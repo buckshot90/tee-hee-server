@@ -4,16 +4,16 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var compress = require('compression');
+//var compress = require('compression');
 
 var app = express();
 
 var config = require('./config');
-var log = require('./utils/log')(module);
+var log = require('./libs/log')(module);
 
 var ENV = config.get('env');
 
-app.use(compress());
+//app.use(compress());
 app.use(favicon(path.normalize(path.join(__dirname, '../public/favicon.ico'))));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 //build routs
-require('./utils/routes')(app);
+require('./config/routes')(app);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

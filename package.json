@@ -17,5 +17,8 @@
     "compression": "*"
   },
   "main": "app.js",
-  "author": ""
+  "author": "",
+  "scripts": {
+    "start": "node server.js"
+  }
 }

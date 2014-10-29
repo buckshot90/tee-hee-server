@@ -20,15 +20,6 @@
     "1.0.0": {
       "/users/": {
         "get": "usersController.index"
-      },
-      "/cards/": {
-        "get": "cardsController.index",
-        "post": "cardsController.create"
-      },
-      "/cards/:card": {
-        "get": "cardsController.card",
-        "put": "cardsController.update",
-        "delete": "cardsController.remove"
       }
     }
   }

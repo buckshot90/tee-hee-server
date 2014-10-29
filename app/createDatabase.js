@@ -2,8 +2,8 @@
  * Created by pov on 29.10.2014.
  */
 var Q = require('q');
-var mongoose = require('./utils/mongoose');
-var log = require('./utils/log')(module);
+var mongoose = require('./libs/mongoose');
+var log = require('./libs/log')(module);
 
 //mongoose.set('debug', true);
 
