@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
+var compress = require('compression');
 
 var app = express();
 
@@ -12,6 +13,7 @@ var log = require('./utils/log')(module);
 
 var ENV = config.get('env');
 
+app.use(compress());
 app.use(favicon(path.normalize(path.join(__dirname, '../public/favicon.ico'))));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -33,14 +35,14 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
 
     if (ENV === 'development') {
-        res.send({
+        res.json({
             message: err.message,
             error: err
         });
 
         log.error(err, {req: {method: req.method, url: req.url, body: req.body}});
     } else {
-        res.send({
+        res.json({
             message: err.message,
             error: {}
         });

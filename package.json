@@ -13,7 +13,8 @@
     "winston": "*",
     "morgan": "*",
     "nconf": "*",
-    "mongoose": "*"
+    "mongoose": "*",
+    "compression": "*"
   },
   "main": "app.js",
   "author": ""

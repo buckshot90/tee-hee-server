@@ -18,6 +18,9 @@
   "apiVersion": "1.0.0",
   "routes": {
     "1.0.0": {
+      "/users/": {
+        "get": "usersController.index"
+      },
       "/cards/": {
         "get": "cardsController.index",
         "post": "cardsController.create"

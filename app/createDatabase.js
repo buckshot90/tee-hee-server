@@ -5,11 +5,12 @@ var Q = require('q');
 var mongoose = require('./utils/mongoose');
 var log = require('./utils/log')(module);
 
+//mongoose.set('debug', true);
 
-var tasks = [connect, dropDataBase, requireModels, createUsers];
-tasks.reduce(function (prev, task) {
-    return prev.then(task);
-}, Q(null)).catch(function (err) {
+
+run([connect, dropDataBase, requireModels, createUsers]).then(function (users) {
+    console.log("Count of users: %d", users.length);
+}).catch(function (err) {
     log.error(err);
 }).finally(disconnect);
 
@@ -24,7 +25,7 @@ function connect() {
 
 function dropDataBase() {
     var db = mongoose.connection.db;
-    return Q.nbind(db.dropDatabase, db)().then(function (data) {
+    return Q.ninvoke(db, 'dropDatabase').then(function (data) {
         console.log('Drop database');
         return data;
     });
@@ -45,27 +46,36 @@ function requireModels() {
 function createUsers() {
     var users = [
         {username: 'oleg', password: '1'},
-        {username: 'oleg', password: '2'},
+        {username: 'vitaliy', password: '2'},
         {username: 'admin', password: '123456'}
     ];
 
+    var usersCreated = [];
     var tasks = users.reduce(function (prev, user) {
         user = new mongoose.models.User(user);
         return prev.then(function () {
             return Q.ninvoke(user, 'save').then(function (results) {
-                console.log('User created %s', results[0].username);
+                var user = results[0];
+                usersCreated.push(user);
+                console.log('User created %s', user.username);
                 return results[0];
             });
         });
     }, Q(null));
 
-    return tasks;
+    return tasks.then(function () {
+        return usersCreated;
+    });
 }
 
 function disconnect() {
-    return Q.nbind(mongoose.disconnect, mongoose)().then(function () {
+    return Q.ninvoke(mongoose, 'disconnect').then(function () {
         console.log('Disconnected to mongo server');
     });
 }
 
-
+function run(tasks) {
+    return tasks.reduce(function (prev, task) {
+        return prev.then(task);
+    }, Q(null));
+}

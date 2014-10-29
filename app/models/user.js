@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+var Q = require('q');
 var mongoose = require('../utils/mongoose');
 var Schema = mongoose.Schema;
 
@@ -27,4 +28,10 @@ schema.virtual('password').set(function (password) {
     return this._plainPassword;
 });
 
-module.exports = mongoose.model('User', schema);
+var User = mongoose.model('User', schema);
+
+User.nfind = function (params) {
+    return Q.ninvoke(User, 'find', params);
+};
+
+module.exports = User;
