@@ -1,0 +1,10 @@
+.container.tee {
+    margin-top: 100px;
+}
+
+.container.tee .jumbotron p {
+    font-weight: 100;
+    font-size: 14px;
+    line-height: 20px;
+}
+

@@ -18,12 +18,29 @@
   "apiVersion": "1.0.0",
   "routes": {
     "1.0.0": {
-      "/users/": {
-        "get": "usersController.index"
+      "/login/": {
+        "post": "auth.login"
       },
-      "/users/:id":{
-        "get":"usersController.getById"
+      "/signUp/":{
+        "post": "auth.signUp"
+      },
+      "/users/": {
+        "get": "users.list"
+      },
+      "/users/:id": {
+        "get": "users.getById"
       }
+    }
+  },
+  "session": {
+    "secret": "4-R&FVhC8#~qJ;K",
+    "key": "sid",
+    "db": "session",
+    "resave": true,
+    "saveUninitialized": true,
+    "cookie": {
+      "httpOnly": true,
+      "maxAge": null
     }
   }
 }

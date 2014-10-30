@@ -1,0 +1,34 @@
+<% layout('./layout/page') %>
+
+
+<h2>Tee-Hee API server</h2>
+<h4>API usage:</h4>
+<ul>
+    <li>/api/{version}/{entity}/{id}</li>
+</ul>
+
+Examples:
+<pre>
+    POST /dogs — create new dog.
+    GET /dogs — return all dogs list
+    PUT /dogs — edit all dogs
+    DELETE /dogs — remove all dogs
+
+    POST /dogs/12345 — bad request (dog 12345 already exists)
+    GET /dogs/12345 — return dog
+    PUT /dogs/12345 — edit dog 1235
+    DELETE /dogs/12345 — remove dog 12345
+</pre>
+
+Response Codes:
+<pre>
+    200 - Ok
+    201 - Created (entity created)
+    304 - Not Modified
+    400 - Bad Request
+    404 - Not Found
+    401 - Unauthorized
+    403 - Forbidden
+</pre>
+
+<a href="http://habrahabr.ru/post/181988/" target="_blank">See more...</a>

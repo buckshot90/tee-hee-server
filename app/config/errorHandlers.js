@@ -7,13 +7,18 @@ var HttpError = require('../libs/httpError');
 module.exports = function (app) {
     var ENV = config.get('env');
 
+
+    app.use(function (req, res, next) {
+        next(404);
+    });
+
+
     app.use(function (err, req, res, next) {
         if (typeof err === 'number') {
             err = new HttpError(err);
         }
 
         if (!(err instanceof HttpError)) {
-
             if (ENV === 'development') {
                 err = extend({
                     message: err.message,
@@ -29,6 +34,6 @@ module.exports = function (app) {
 
         res.status(err.status || 500);
         res.send(err);
-
+        //res.render('error', {error: err});
     });
 };
