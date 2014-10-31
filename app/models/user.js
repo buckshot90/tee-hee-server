@@ -50,4 +50,8 @@ User.qfindOne = function (params) {
     return Q.nbind(User.findOne, User)(params);
 };
 
+User.qfindById = function (id) {
+    return Q.nbind(User.findById, User)(id);
+};
+
 module.exports = User;

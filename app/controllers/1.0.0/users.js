@@ -1,3 +1,4 @@
+var Q = require('Q');
 var User = require('../../models/user');
 var HttpError = require('../../libs/httpError');
 var ObjectID = require('mongodb').ObjectID;
@@ -10,20 +11,17 @@ exports.list = function (req, res, next) {
 };
 
 exports.getById = function (req, res, next) {
-    id = getId(req);
-    if (!id)return next(404);
-
-    User.qfindOne({_id: req.params.id}).then(function (user) {
+    Q(checkId(req.params.id)).then(User.qfindById).then(function (user) {
         if (!user)return next(404);
         res.send(user);
     }, next);
 };
 
 
-function getId(req) {
+function checkId(id) {
     try {
-        return new ObjectID(req.params.id);
+        return new ObjectID(id);
     } catch (e) {
-        return null;
+        throw  new HttpError(404);
     }
 }
