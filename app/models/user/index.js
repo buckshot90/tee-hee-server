@@ -8,6 +8,13 @@ var Schema = mongoose.Schema;
 
 var schema = new Schema({
     username: {type: String, unique: true, required: true},
+    email: {
+        type: String,
+        trim: true,
+        unique: true,
+        required: 'Email address is required',
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+    },
     hashedPassword: {type: String, required: true},
     salt: {type: String, required: true},
     created: {type: Date, default: Date.now},
@@ -31,11 +38,28 @@ schema.methods.checkPassword = function (password) {
 };
 
 schema.statics.auth = function (username, password) {
-    return this.qfindOne({username: username}).then(function (user) {
+    var User = mongoose.model('User');
+    return User.qfindOne({$or: [{username: username}, {email: username}]}).then(function (user) {
         if (user && user.checkPassword(password)) {
             return user;
         }
         throw new AuthError('Invalid username or password');
+    });
+};
+
+schema.statics.signUp = function (username, password, email) {
+    var newUser = null;
+    var User = mongoose.model('User');
+
+    return User.qfindOne({username: username}).then(function (user) {
+        if (user)throw new AuthError('User already exists');
+        return User.qfindOne({email: email})
+    }).then(function (user) {
+        if (user)throw new AuthError('Email address already exists');
+        newUser = new User({username: username, password: password, email: email});
+        return Q.nbind(newUser.save, newUser)();
+    }).then(function (results) {
+        return results[0];
     });
 };
 

@@ -1,0 +1,1 @@
+module.exports = require('mongoose/lib/error/validation');

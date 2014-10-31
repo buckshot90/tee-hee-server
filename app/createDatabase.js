@@ -45,9 +45,9 @@ function requireModels() {
 
 function createUsers() {
     var users = [
-        {username: 'oleg', password: '1'},
-        {username: 'vitaliy', password: '2'},
-        {username: 'admin', password: '123456'}
+        {username: 'oleg', password: '1', email:'oleg@teehee.com'},
+        {username: 'vitaliy', password: '2', email:'vitaliy@teehee.com'},
+        {username: 'admin', password: '123456', email:'admin@teehee.com'}
     ];
 
     var usersCreated = [];
