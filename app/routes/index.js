@@ -10,8 +10,16 @@ module.exports = function (app) {
         res.redirect('/');
     });
 
-    require('./' + API_VERSION + '/auth')(app, BASE_URL);
-    require('./' + API_VERSION + '/users')(app, BASE_URL);
+    requreRoute(app, '/auth');
+    requreRoute(app, '/users');
 
     require('./errors')(app);
 };
+
+function requreRoute(app, path) {
+    try {
+        require('./' + API_VERSION + path)(app, BASE_URL);
+    } catch (e) {
+        require('./1.0.0' + path)(app, BASE_URL);
+    }
+}

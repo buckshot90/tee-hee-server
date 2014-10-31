@@ -16,22 +16,6 @@
     }
   },
   "apiVersion": "1.0.0",
-  "routes": {
-    "1.0.0": {
-      "/login/": {
-        "post": "auth.login"
-      },
-      "/signUp/":{
-        "post": "auth.signUp"
-      },
-      "/users/": {
-        "get": "users.list"
-      },
-      "/users/:id": {
-        "get": "users.getById"
-      }
-    }
-  },
   "session": {
     "secret": "4-R&FVhC8#~qJ;K",
     "key": "sid",
