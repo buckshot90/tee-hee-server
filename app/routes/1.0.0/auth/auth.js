@@ -1,5 +1,5 @@
-var User = require('../../models/user');
-var HttpError = require('../../libs/httpError');
+var User = require('../../../models/user');
+var HttpError = require('../../../models/errors/httpError');
 
 exports.login = function (req, res, next) {
     var username = req.body.username;

@@ -1,6 +1,6 @@
 var Q = require('Q');
-var User = require('../../models/user');
-var HttpError = require('../../libs/httpError');
+var User = require('../../../models/user');
+var HttpError = require('../../../models/errors/httpError');
 var ObjectID = require('mongodb').ObjectID;
 
 

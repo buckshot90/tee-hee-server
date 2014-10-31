@@ -1,1 +1,0 @@
-echo y | supervisor.cmd -q server.js
