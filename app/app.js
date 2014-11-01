@@ -29,6 +29,10 @@ app.get('/', function (req, res) {
     res.sendFile(PUBLIC_DIR + 'index.html');
 });
 
+app.get('/upload', function (req, res) {
+    res.sendFile(PUBLIC_DIR + 'upload.html');
+});
+
 //build routs
 require('./routes')(app);
 
