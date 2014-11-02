@@ -9,7 +9,7 @@ var Schema = mongoose.Schema;
 var schema = new Schema({
     url: {type: String, unique: true, required: true},
     created: {type: Date, default: Date.now},
-    author: [{type: Schema.Types.ObjectId, ref: 'User'}]
+    author: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
 schema.statics.qfind = function (params, fields, options) {

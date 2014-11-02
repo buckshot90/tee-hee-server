@@ -35,7 +35,7 @@
     "highWaterMark": 2097152,
     "limits": {
       "fileSize": 10485760,
-      "files": 1
+      "files": 2
     }
   }
 }
