@@ -1,5 +1,6 @@
 var Q = require('q');
 var crypto = require('crypto');
+var config = require('../../config');
 var mongoose = require('../../libs/mongoose');
 var AuthError = require('../errors/authError');
 
@@ -13,8 +14,9 @@ var schema = new Schema({
         trim: true,
         unique: true,
         required: 'Email address is required',
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Email address is not valid']
     },
+    role: {type: String, enum: config.get('enums:roles'), default: 'user', required: true},
     hashedPassword: {type: String, required: true},
     salt: {type: String, required: true},
     created: {type: Date, default: Date.now},
@@ -35,6 +37,15 @@ schema.methods.encryptPassword = function (password) {
 
 schema.methods.checkPassword = function (password) {
     return this.encryptPassword(password) === this.hashedPassword;
+};
+
+schema.methods.authorize = function (accessLevel) {
+    if (accessLevel == 'user') {
+        return true;
+    } else if (accessLevel === 'manager') {
+        return this.role === 'admin' || this.role === 'manager';
+    }
+    return this.role === 'admin';
 };
 
 schema.statics.auth = function (username, password) {

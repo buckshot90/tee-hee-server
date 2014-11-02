@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var morgan = require('morgan');
+var busboy = require('connect-busboy');
 
 //var compress = require('compression');
 var config = require('./config');
@@ -20,6 +21,7 @@ app.use(favicon(path.normalize(PUBLIC_DIR + 'favicon.ico')));
 app.use(express.static(PUBLIC_DIR));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(busboy(config.get('busboy')));
 app.use(cookieParser());
 app.use(morgan('dev'));
 

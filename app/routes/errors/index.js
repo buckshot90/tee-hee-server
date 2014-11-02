@@ -32,7 +32,7 @@ module.exports = function (app) {
         if (err instanceof Error) {
             if (!(err instanceof HttpError)) {
                 if (isDevelopment) {
-                    err = JSON.parse(JSON.stringify(err, ['stack', 'message', 'inner'], 2));
+                    err = JSON.parse(JSON.stringify(err, ['stack', 'message', 'name'], 2));
                     err.status = err.status || 500;
                 } else {
                     err = new HttpError(500);

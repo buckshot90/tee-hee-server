@@ -1,5 +1,4 @@
 var controller = require('./../../controllers/auth');
-var filters = require('../../controllers/auth/filters');
 
 module.exports = function (app, url) {
     app.post(url + '/auth/login', controller.login);

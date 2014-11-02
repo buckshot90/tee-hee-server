@@ -1,6 +1,5 @@
 var path = require('path');
 var config = require('../config');
-var authFilters = requre('../controllers/auth/filters');
 
 var API_VERSION = config.get('apiVersion');
 var BASE_URL = '/api/' + API_VERSION;
@@ -12,14 +11,11 @@ module.exports = function (app) {
     });
 
 
-    //public API methods
+    //API routes
     requreRoute(app, '/auth');
-
-    //private methods
-    app.use(url + '/users', authFilters.checkAuth);
     requreRoute(app, '/users');
+    requreRoute(app, '/upload');
 
-    //errors
     require('./errors')(app);
 };
 

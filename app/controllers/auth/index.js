@@ -2,6 +2,7 @@ var User = require('../../models/user/index');
 var HttpError = require('../../models/errors/httpError');
 var AuthError = require('../../models/errors/authError');
 var ValidationError = require('../../models/errors/validationError');
+var _ = require('underscore');
 
 exports.login = function (req, res, next) {
     var username = req.body.username;
@@ -33,7 +34,13 @@ exports.signUp = function (req, res, next) {
         req.session.user = user._id;
         res.send(user);
     }).catch(function (err) {
-        if (err instanceof AuthError || err instanceof ValidationError) {
+        if (err instanceof AuthError) {
+            return next(new HttpError(400, err.message));
+        } else if (err instanceof ValidationError) {
+            if (_.isObject(err.errors)) {
+                var first = err.errors[Object.keys(err.errors)[0]] || {};
+                return next(new HttpError(400, first.message));
+            }
             return next(new HttpError(400, err.message));
         }
         return next(err);

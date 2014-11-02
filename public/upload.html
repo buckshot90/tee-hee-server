@@ -21,10 +21,10 @@
     <div class="jumbotron">
         <h2>Upload</h2>
 
-        <form action="/api/1.0.0/upload" method="post">
+        <form action="/api/1.0.0/upload" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="fileTestExpress">Image upload</label>
-                <input type="file" id="fileTestExpress" name="fileTestExpress"accept="image/jpeg,image/png,image/gif">
+                <input type="file" id="fileTestExpress" name="image"accept="image/jpeg,image/png,image/gif">
                 <p class="help-block">jpeg, png, gif</p>
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
