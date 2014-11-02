@@ -1,17 +1,18 @@
 var fs = require('fs');
 var Q = require('q');
-var _ = require('underscore');
 var path = require('path');
 var ObjectID = require('mongodb').ObjectID;
 var Resource = require('../../models/resource');
-var UploadError = require('../../models/errors/uploadError');
-var ValidationError = require('../../models/errors/validationError');
 var HttpError = require('../../models/errors/httpError');
-var config = require('../../config');
 
-var FILES_LIMIT = config.get('busboy:limits:files');
 
 exports.upload = function (req, res, next) {
+    var emit = req.busboy.emit;
+    req.busboy.emit = function (name) {
+        console.log(name);
+        return emit.apply(req.busboy, arguments);
+    };
+
     readRequest(req).then(function (resources) {
         res.send({resources: resources});
     }, next);
@@ -25,12 +26,6 @@ function readRequest(req) {
 
     req.pipe(req.busboy);
 
-    var emit = req.busboy.emit;
-    req.busboy.emit = function (name) {
-        console.log(name);
-        return emit.apply(req.busboy, arguments);
-    };
-
     req.busboy.on('file', function onFile(fieldname, stream, filename, encoding, mime) {
         console.log("file: " + fieldname, filename, mime);
 
@@ -43,14 +38,12 @@ function readRequest(req) {
         }).then(function (resource) {
             console.log(resource);
             resources.push(resource);
-            if(resources.length >= FILES_LIMIT){
-                defer.resolve(resources);
-                req.busboy.removeListener('file', onFile);
-            }
         }).catch(defer.reject);
     });
 
+    req.busboy.on('finish', function () {
 
+    });
 
     req.busboy.on('error', defer.reject);
 
