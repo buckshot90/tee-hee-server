@@ -21,7 +21,7 @@ app.use(favicon(path.normalize(PUBLIC_DIR + 'favicon.ico')));
 app.use(express.static(PUBLIC_DIR));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(busboy(config.get('busboy')));
+app.use(busboy(config.get('upload:busboy')));
 app.use(cookieParser());
 app.use(morgan('dev'));
 

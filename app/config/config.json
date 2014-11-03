@@ -7,8 +7,12 @@
     "options": {}
   },
   "enums": {
-    "roles":{
-      "values":["admin", "manager", "user"],
+    "roles": {
+      "values": [
+        "admin",
+        "manager",
+        "user"
+      ],
       "message": "role validator failed for path '{PATH} with value '{VALUE}'"
     },
     "languages": {
@@ -31,11 +35,16 @@
       "maxAge": null
     }
   },
-  "busboy": {
-    "highWaterMark": 2097152,
-    "limits": {
-      "fileSize": 10485760,
-      "files": 2
+  "upload": {
+    "mimes": {
+      "images": ["image/jpeg", "image/png", "image/gi"]
+    },
+    "busboy": {
+      "highWaterMark": 2097152,
+      "limits": {
+        "fileSize": 10485760,
+        "files": 2
+      }
     }
   }
 }

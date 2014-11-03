@@ -1,21 +1,33 @@
-var fs = require('fs');
 var Q = require('q');
+var fs = require('fs');
 var path = require('path');
+var _ = require('underscore');
 var ObjectID = require('mongodb').ObjectID;
+var config = require('../../config');
 var Resource = require('../../models/resource');
 var HttpError = require('../../models/errors/httpError');
+var UploadError = require('../../models/errors/uploadError');
+var ValidationError = require('../../models/errors/validationError');
 
+var IMAGES_MIMES = config.get('upload:mimes:images');
 
 exports.upload = function (req, res, next) {
-    var emit = req.busboy.emit;
-    req.busboy.emit = function (name) {
-        console.log(name);
-        return emit.apply(req.busboy, arguments);
-    };
 
     readRequest(req).then(function (resources) {
         res.send({resources: resources});
-    }, next);
+    }, function (err) {
+        if (err instanceof UploadError) {
+            return next(new HttpError(400, err.message));
+        } else if (err instanceof  ValidationError) {
+            if (_.isObject(err.errors)) {
+                var first = err.errors[Object.keys(err.errors)[0]] || {};
+                return next(new HttpError(400, first.message));
+            }
+            return next(new HttpError(400, err.message));
+        }
+
+        next(err);
+    });
 
 };
 
@@ -23,26 +35,32 @@ function readRequest(req) {
     var defer = Q.defer();
 
     var resources = [];
+    var filesCount = 0;
 
     req.pipe(req.busboy);
 
     req.busboy.on('file', function onFile(fieldname, stream, filename, encoding, mime) {
-        console.log("file: " + fieldname, filename, mime);
+        filesCount++;
+        console.log(defer.promise.inspect());
 
-        if (!isImage(mime)) {
-            throw new UploadError('Wrong MIME type');
+        if (!defer.promise.isRejected()) {
+
+            if (!isImage(mime)) {
+                defer.reject(new UploadError('Wrong MIME type'));
+                //TO DO: cleanup files and recodrs in db from resources array
+                return;
+            }
+
+            saveFile((new ObjectID()).toString(), stream).then(function (url) {
+                console.log('CREATE RESOURCE %s %s', url, filename);
+                return createResource(url, req.session.user);
+            }).then(function (resource) {
+                resources.push(resource);
+                if (resources.length === filesCount) {
+                    defer.resolve(resources);
+                }
+            }).catch(defer.reject);
         }
-
-        saveFile((new ObjectID()).toString(), stream).then(function (url) {
-            return createResource(url, req.session.user);
-        }).then(function (resource) {
-            console.log(resource);
-            resources.push(resource);
-        }).catch(defer.reject);
-    });
-
-    req.busboy.on('finish', function () {
-
     });
 
     req.busboy.on('error', defer.reject);
@@ -77,5 +95,5 @@ function createResource(url, userId) {
 }
 
 function isImage(mime) {
-    return mime === 'image/jpeg' || mime === 'image/png' || mime === 'image/gif';
+    return IMAGES_MIMES.indexOf(mime) != -1;
 }
