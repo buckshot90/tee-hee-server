@@ -12,6 +12,14 @@ var ValidationError = require('../../models/errors/validationError');
 var IMAGES_MIMES = config.get('upload:mimes:images');
 var REPOSITORY_PATH = config.get('upload:path');
 
+fs.exists(REPOSITORY_PATH, function (exists) {
+    if (!exists)fs.mkdir(REPOSITORY_PATH, function (err) {
+        if (err) throw err;
+    });
+});
+
+
+
 exports.upload = function (req, res, next) {
 
     readUploadRequest(req).then(function (resources) {

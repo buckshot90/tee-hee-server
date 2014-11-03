@@ -1,2 +1,4 @@
-.idea/*
+.idea/
+resources/
+logs/
 npm-debug.log
