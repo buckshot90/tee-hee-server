@@ -37,8 +37,13 @@
   },
   "upload": {
     "mimes": {
-      "images": ["image/jpeg", "image/png", "image/gi"]
+      "images": [
+        "image/jpeg",
+        "image/png",
+        "image/gif"
+      ]
     },
+    "path": "./resources",
     "busboy": {
       "highWaterMark": 2097152,
       "limits": {

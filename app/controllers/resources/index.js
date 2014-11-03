@@ -10,10 +10,11 @@ var UploadError = require('../../models/errors/uploadError');
 var ValidationError = require('../../models/errors/validationError');
 
 var IMAGES_MIMES = config.get('upload:mimes:images');
+var REPOSITORY_PATH = config.get('upload:path');
 
 exports.upload = function (req, res, next) {
 
-    readRequest(req).then(function (resources) {
+    readUploadRequest(req).then(function (resources) {
         res.send({resources: resources});
     }, function (err) {
         if (err instanceof UploadError) {
@@ -31,7 +32,41 @@ exports.upload = function (req, res, next) {
 
 };
 
-function readRequest(req) {
+exports.getById = function (req, res, next) {
+    Q(req).then(function (req) {
+        try {
+            return new ObjectID(req.params.id);
+        } catch (e) {
+            throw new HttpError(404);
+        }
+    }).then(Resource.qfindByIdWithAuthor).then(function (resource) {
+        if (!resource)throw new HttpError(404);
+
+        if (resource.authorize(req.currentUser)) {
+            sendResource(resource, res, next);
+        } else {
+            throw new HttpError(403);
+        }
+
+        sendResource(resource, res, next);
+    }).catch(next);
+};
+
+
+function sendResource(resource, responce, next) {
+    responce.set('Content-Type', resource.type);
+
+    var file = new fs.ReadStream(path.normalize(path.join(REPOSITORY_PATH, resource._id.toString())));
+
+    file.pipe(responce);
+    file.on('error', next);
+
+    responce.on('close', function () {
+        file.destroy();
+    });
+}
+
+function readUploadRequest(req) {
     var defer = Q.defer();
 
     var resources = [];
@@ -47,13 +82,11 @@ function readRequest(req) {
 
             if (!isImage(mime)) {
                 defer.reject(new UploadError('Wrong MIME type'));
-                //TO DO: cleanup files and recodrs in db from resources array
                 return;
             }
 
-            saveFile((new ObjectID()).toString(), stream).then(function (url) {
-                console.log('CREATE RESOURCE %s %s', url, filename);
-                return createResource(url, req.session.user);
+            saveFile(stream).then(function (id) {
+                return createResource(id, req.session.user, mime);
             }).then(function (resource) {
                 resources.push(resource);
                 if (resources.length === filesCount) {
@@ -68,11 +101,12 @@ function readRequest(req) {
     return defer.promise;
 }
 
-function saveFile(name, stream) {
+function saveFile(stream) {
     var defer = Q.defer();
 
-    var url = path.normalize(path.join('./files/', name));
-    var sw = fs.createWriteStream(url);
+    var id = (new ObjectID()).toString();
+    var savePath = path.normalize(path.join(REPOSITORY_PATH, id));
+    var sw = fs.createWriteStream(savePath);
 
     stream.pipe(sw);
 
@@ -81,14 +115,14 @@ function saveFile(name, stream) {
     sw.on('error', defer.reject);
 
     sw.on('finish', function () {
-        defer.resolve(url);
+        defer.resolve(id);
     });
 
     return defer.promise;
 }
 
-function createResource(url, userId) {
-    var resource = new Resource({url: url, author: userId});
+function createResource(resId, userId, type) {
+    var resource = new Resource({_id: resId, author: userId, type: type});
     return Q.nbind(resource.save, resource)().then(function (results) {
         return results[0];
     });

@@ -14,7 +14,7 @@ module.exports = function (app) {
     //API routes
     requreRoute(app, '/auth');
     requreRoute(app, '/users');
-    requreRoute(app, '/upload');
+    requreRoute(app, '/resources');
 
     require('./errors')(app);
 };
