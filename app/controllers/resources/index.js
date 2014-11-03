@@ -19,9 +19,7 @@ fs.exists(REPOSITORY_PATH, function (exists) {
 });
 
 
-
 exports.upload = function (req, res, next) {
-
     readUploadRequest(req).then(function (resources) {
         res.send({resources: resources});
     }, function (err) {
@@ -34,10 +32,8 @@ exports.upload = function (req, res, next) {
             }
             return next(new HttpError(400, err.message));
         }
-
         next(err);
     });
-
 };
 
 exports.getById = function (req, res, next) {
@@ -51,26 +47,29 @@ exports.getById = function (req, res, next) {
         if (!resource)throw new HttpError(404);
 
         if (resource.authorize(req.currentUser)) {
+            res.header('Content-Type', resource.type);
             sendResource(resource, res, next);
         } else {
             throw new HttpError(403);
         }
 
-        sendResource(resource, res, next);
     }).catch(next);
 };
 
 
 function sendResource(resource, responce, next) {
-    responce.set('Content-Type', resource.type);
-
-    var file = new fs.ReadStream(path.normalize(path.join(REPOSITORY_PATH, resource._id.toString())));
-
-    file.pipe(responce);
-    file.on('error', next);
-
-    responce.on('close', function () {
-        file.destroy();
+    var filePath = path.normalize(path.join(REPOSITORY_PATH, resource._id.toString()));
+    fs.exists(filePath, function (exists) {
+        if (exists) {
+            var file = new fs.ReadStream(filePath);
+            file.pipe(responce);
+            file.on('error', next);
+            responce.on('close', function () {
+                file.destroy();
+            });
+        } else {
+            next(404);
+        }
     });
 }
 
