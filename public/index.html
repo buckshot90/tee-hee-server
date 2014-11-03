@@ -12,7 +12,6 @@
         <div class="navbar-header"><a href="/" class="navbar-brand">Tee-Hee</a></div>
         <div id="navbar" collapse="" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/upload">Upload</a></li>
             </ul>
         </div>
     </div>
@@ -51,6 +50,47 @@
         </pre>
 
         <a href="http://habrahabr.ru/post/181988/" target="_blank">See more...</a>
+
+
+        <h4>LOGIN:</h4>
+        <ul>
+            <li>POST /api/{version}/auth/login</li>
+        </ul>
+        <pre>
+            {
+              "username": "&lt;name&gt;",
+              "password": "&lt;password&gt;"
+            }
+        </pre>
+
+        <h4>SIGN UP:</h4>
+        <ul>
+            <li>POST /api/{version}/auth/signup</li>
+        </ul>
+        <pre>
+            {
+                "username": "&lt;name&gt;",
+                "password": "&lt;password&gt;",
+                "email": "&lt;email&gt;"
+            }
+        </pre>
+
+        <h4>LOGOUT:</h4>
+        <ul>
+            <li>POST /api/{version}/auth/logout</li>
+        </ul>
+        <pre>            
+            &lt;empty&gt;
+        </pre>
+
+
+        <h4>UPLOAD:</h4>
+        <ul>
+            <li>POST /api/{version}/resources/upload</li>
+        </ul>
+        <pre>
+            &lt;Standard multipart file upload&gt;
+        </pre>
     </div>
 </div>
 </body>
