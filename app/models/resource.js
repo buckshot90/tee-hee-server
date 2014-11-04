@@ -1,6 +1,6 @@
 var Q = require('q');
-var config = require('../../config');
-var mongoose = require('../../libs/mongoose');
+var config = require('../config/index');
+var mongoose = require('../libs/mongoose');
 
 var Schema = mongoose.Schema;
 

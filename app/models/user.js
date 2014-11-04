@@ -1,8 +1,8 @@
 var Q = require('q');
 var crypto = require('crypto');
-var config = require('../../config');
-var mongoose = require('../../libs/mongoose');
-var AuthError = require('../errors/authError');
+var config = require('../config/index');
+var mongoose = require('../libs/mongoose');
+var AuthError = require('./errors/authError');
 
 var userRoles = config.get('enums:userRoles');
 var accessLevels = config.get('enums:accessLevels');

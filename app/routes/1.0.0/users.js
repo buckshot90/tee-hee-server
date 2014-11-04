@@ -1,6 +1,6 @@
-var controller = require('./../../controllers/users');
-var usersFilters = require('./../../controllers/users/filters');
-var authFilters = require('../../controllers/auth/filters');
+var controller = require('./../../controllers/1.0.0/usersController');
+var usersFilters = require('./../../controllers/1.0.0/usersController').filters;
+var authFilters = require('../../controllers/1.0.0/authController').filters;
 
 module.exports = function (app, url) {
     //private methods

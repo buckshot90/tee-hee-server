@@ -4,10 +4,10 @@ var path = require('path');
 var _ = require('underscore');
 var ObjectID = require('mongodb').ObjectID;
 
-var config = require('../../config');
 var User = require('../../models/user');
 var Resource = require('../../models/resource');
 
+var config = require('../../config/index');
 var HttpError = require('../../models/errors/httpError');
 var UploadError = require('../../models/errors/uploadError');
 var ValidationError = require('../../models/errors/validationError');
@@ -21,6 +21,7 @@ fs.exists(REPOSITORY_PATH, function (exists) {
     });
 });
 
+exports.filters={};
 
 exports.upload = function (req, res, next) {
     readUploadRequest(req).then(function (resources) {
@@ -46,6 +47,20 @@ exports.getById = function (req, res, next) {
     } else {
         throw new HttpError(403);
     }
+};
+
+exports.filters.mapModel = function (req, res, next) {
+    Q(req).then(function (req) {
+        try {
+            return new ObjectID(req.params.id);
+        } catch (e) {
+            throw new HttpError(404, 'Resource Not Found');
+        }
+    }).then(Resource.qfindByIdWithAuthor).then(function (resource) {
+        if (!resource)throw new HttpError(404, 'Resource Not Found');
+        req.resource = resource;
+        next();
+    }).catch(next);
 };
 
 

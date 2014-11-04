@@ -1,9 +1,22 @@
-var User = require('../../models/user');
+var Category = require('../../models/category');
 var HttpError = require('../../models/errors/httpError');
 var ObjectID = require('mongodb').ObjectID;
 var Q = require('q');
 
-exports.mapModel = function (req, res, next) {
+exports.filters = {};
+
+exports.list = function (req, res, next) {
+    User.qfind({}).then(function (users) {
+        res.send(users);
+    }, next);
+};
+
+exports.category = function (req, res, next) {
+    res.send(req.user);
+};
+
+
+exports.filters.mapModel = function (req, res, next) {
     Q(req).then(function (req) {
         try {
             return new ObjectID(req.params.id);

@@ -1,4 +1,4 @@
-var config = require('../../config');
+var config = require('../../config/index');
 var log = require('../../libs/log')(module);
 var HttpError = require('../../models/errors/httpError');
 

@@ -1,6 +1,6 @@
-var controller = require('./../../controllers/resources');
-var resourceFilters = require('../../controllers/resources/filters');
-var authFilters = require('../../controllers/auth/filters');
+var controller = require('./../../controllers/1.0.0/resourcesController');
+var resourceFilters = require('../../controllers/1.0.0/resourcesController').filters;
+var authFilters = require('../../controllers/1.0.0/authController').filters;
 
 module.exports = function (app, url) {
     //public methods

@@ -1,4 +1,4 @@
-var controller = require('./../../controllers/error');
+var controller = require('./../../controllers/1.0.0/errorController');
 
 module.exports = function (app) {
     //catch Not Found errors
