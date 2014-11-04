@@ -3,8 +3,11 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var ObjectID = require('mongodb').ObjectID;
+
 var config = require('../../config');
+var User = require('../../models/user');
 var Resource = require('../../models/resource');
+
 var HttpError = require('../../models/errors/httpError');
 var UploadError = require('../../models/errors/uploadError');
 var ValidationError = require('../../models/errors/validationError');
@@ -37,23 +40,12 @@ exports.upload = function (req, res, next) {
 };
 
 exports.getById = function (req, res, next) {
-    Q(req).then(function (req) {
-        try {
-            return new ObjectID(req.params.id);
-        } catch (e) {
-            throw new HttpError(404);
-        }
-    }).then(Resource.qfindByIdWithAuthor).then(function (resource) {
-        if (!resource)throw new HttpError(404);
-
-        if (resource.authorize(req.currentUser)) {
-            res.header('Content-Type', resource.type);
-            sendResource(resource, res, next);
-        } else {
-            throw new HttpError(403);
-        }
-
-    }).catch(next);
+    if (User.authorize('manager', req.currentUser) || req.resource.authorize(req.currentUser)) {
+        res.header('Content-Type', req.resource.type);
+        sendResource(req.resource, res, next);
+    } else {
+        throw new HttpError(403);
+    }
 };
 
 
@@ -93,7 +85,7 @@ function readUploadRequest(req) {
             }
 
             saveFile(stream).then(function (id) {
-                return createResource(id, req.session.user, mime);
+                return Resource.create(id, req.currentUser._id, mime);
             }).then(function (resource) {
                 resources.push(resource);
                 if (resources.length === filesCount) {
@@ -126,13 +118,6 @@ function saveFile(stream) {
     });
 
     return defer.promise;
-}
-
-function createResource(resId, userId, type) {
-    var resource = new Resource({_id: resId, author: userId, type: type});
-    return Q.nbind(resource.save, resource)().then(function (results) {
-        return results[0];
-    });
 }
 
 function isImage(mime) {

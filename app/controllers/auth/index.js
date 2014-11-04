@@ -8,7 +8,7 @@ exports.login = function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
 
-    return User.auth(username, password).then(function (user) {
+    return User.authenticate(username, password).then(function (user) {
         req.session.user = user._id;
         return res.send(user);
     }).catch(function (err) {
@@ -30,7 +30,7 @@ exports.signUp = function (req, res, next) {
     var password = req.body.password;
     var email = req.body.email;
 
-    User.signUp(username, password, email).then(function (user) {
+    User.create(username, password, email).then(function (user) {
         req.session.user = user._id;
         res.send(user);
     }).catch(function (err) {

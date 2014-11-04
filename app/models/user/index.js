@@ -4,6 +4,9 @@ var config = require('../../config');
 var mongoose = require('../../libs/mongoose');
 var AuthError = require('../errors/authError');
 
+var userRoles = config.get('enums:userRoles');
+var accessLevels = config.get('enums:accessLevels');
+
 var Schema = mongoose.Schema;
 
 
@@ -38,16 +41,8 @@ schema.methods.checkPassword = function (password) {
     return this.encryptPassword(password) === this.hashedPassword;
 };
 
-schema.methods.authorize = function (accessLevel) {
-    if (accessLevel == 'user') {
-        return true;
-    } else if (accessLevel === 'manager') {
-        return this.role === 'admin' || this.role === 'manager';
-    }
-    return this.role === 'admin';
-};
 
-schema.statics.auth = function (username, password) {
+schema.statics.authenticate = function (username, password) {
     var User = mongoose.model('User');
     return User.qfindOne({$or: [{username: username}, {email: username}]}).then(function (user) {
         if (user && user.checkPassword(password)) {
@@ -57,16 +52,23 @@ schema.statics.auth = function (username, password) {
     });
 };
 
-schema.statics.signUp = function (username, password, email) {
+schema.statics.authorize = function (accessLevel, user) {
+    var role = user ? user.role : 'anonymous';
+    return (accessLevels[accessLevel] & userRoles[role]) > 0;
+};
+
+
+schema.statics.create = function (username, password, email, role) {
     var newUser = null;
     var User = mongoose.model('User');
 
+    if (!role)role = "user";
     return User.qfindOne({username: username}).then(function (user) {
         if (user)throw new AuthError('User already exists');
         return User.qfindOne({email: email})
     }).then(function (user) {
         if (user)throw new AuthError('Email address already exists');
-        newUser = new User({username: username, password: password, email: email});
+        newUser = new User({username: username, password: password, email: email, role: role});
         return Q.nbind(newUser.save, newUser)();
     }).then(function (results) {
         return results[0];

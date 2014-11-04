@@ -1,11 +1,12 @@
 var controller = require('./../../controllers/resources');
+var resourceFilters = require('../../controllers/resources/filters');
 var authFilters = require('../../controllers/auth/filters');
 
 module.exports = function (app, url) {
-    app.use(url + '/resources/', authFilters.checkAuth);
+    //public methods
+    app.get(url + '/resources/:id', authFilters.authenticate, resourceFilters.mapModel, controller.getById);
 
     //private methods
-    app.post(url + '/resources/upload', controller.upload);
-    app.get(url + '/resources/:id', controller.getById);
+    app.post(url + '/resources/upload', authFilters.authorize('user'), controller.upload);
 };
 

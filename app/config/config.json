@@ -7,6 +7,10 @@
     "options": {}
   },
   "enums": {
+    "accessTypes": [
+      "private",
+      "public"
+    ],
     "roles": {
       "values": [
         "admin",
@@ -21,6 +25,18 @@
         "en"
       ],
       "message": "language validator failed for path `{PATH}` with value `{VALUE}`"
+    },
+    "userRoles": {
+      "admin": 8,
+      "manager": 4,
+      "user": 2,
+      "anonymous": 1
+    },
+    "accessLevels": {
+      "public": 15,
+      "user": 14,
+      "manager": 12,
+      "admin": 8
     }
   },
   "apiVersion": "1.0.0",

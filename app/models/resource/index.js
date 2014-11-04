@@ -1,5 +1,4 @@
 var Q = require('q');
-var crypto = require('crypto');
 var config = require('../../config');
 var mongoose = require('../../libs/mongoose');
 
@@ -14,9 +13,20 @@ var schema = new Schema({
 
 
 schema.methods.authorize = function (user) {
-    return user.role === 'admin' ||  this.author.role === 'admin' || user._id.toString() === this.author._id.toString();
-
+    var author = this.author;
+    var id = user ? user._id.toString() : '';
+    return author.role === 'admin' || author.role === 'manager' || id === author._id.toString();
 };
+
+
+schema.statics.create = function (id, userId, type) {
+    var Resource = mongoose.model('Resource');
+    var resource = new Resource({_id: id, author: userId, type: type});
+    return Q.nbind(resource.save, resource)().then(function (results) {
+        return results[0];
+    });
+};
+
 
 schema.statics.qfind = function (params, fields, options) {
     var Resource = mongoose.model('Resource');

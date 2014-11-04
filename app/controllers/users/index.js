@@ -1,4 +1,4 @@
-var User = require('../../models/user/index');
+var User = require('../../models/user');
 
 exports.list = function (req, res, next) {
     User.qfind({}).then(function (users) {
