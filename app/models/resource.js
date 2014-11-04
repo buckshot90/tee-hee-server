@@ -8,6 +8,7 @@ var Schema = mongoose.Schema;
 var schema = new Schema({
     created: {type: Date, default: Date.now},
     type: {type: String, required: true},
+    url: {type: String, required: true},
     author: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
@@ -19,9 +20,9 @@ schema.methods.authorize = function (user) {
 };
 
 
-schema.statics.create = function (id, userId, type) {
+schema.statics.create = function (id, userId, type, url) {
     var Resource = mongoose.model('Resource');
-    var resource = new Resource({_id: id, author: userId, type: type});
+    var resource = new Resource({_id: id, author: userId, type: type, url: url});
     return Q.nbind(resource.save, resource)().then(function (results) {
         return results[0];
     });
@@ -30,7 +31,7 @@ schema.statics.create = function (id, userId, type) {
 
 schema.statics.qfind = function (params, fields, options) {
     var Resource = mongoose.model('Resource');
-    return Q.nbind(Resource.find, Resource)(params);
+    return Q.nbind(Resource.find, Resource)(params, fields, options);
 };
 
 schema.statics.qfindOne = function (params, fields, options) {
@@ -55,6 +56,7 @@ schema.options.toJSON = {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
+        delete ret.author;
         return ret;
     }
 };

@@ -71,7 +71,7 @@ exports.filters.authorize = function (accessLevel) {
     }
 };
 
-exports.filters.authenticate = function (req, res, next) {
+exports.filters.mapCurrentUser = function (req, res, next) {
     if (!req.session.user) return next();
 
     restoreUser(req.session.user).then(function (user) {

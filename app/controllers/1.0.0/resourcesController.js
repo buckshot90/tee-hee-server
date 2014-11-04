@@ -14,6 +14,8 @@ var ValidationError = require('../../models/errors/validationError');
 
 var IMAGES_MIMES = config.get('upload:mimes:images');
 var REPOSITORY_PATH = config.get('upload:path');
+var RESOURCE_URL = '/api/1.0.0/resources/@ID';
+
 
 fs.exists(REPOSITORY_PATH, function (exists) {
     if (!exists)fs.mkdir(REPOSITORY_PATH, function (err) {
@@ -100,7 +102,7 @@ function readUploadRequest(req) {
             }
 
             saveFile(stream).then(function (id) {
-                return Resource.create(id, req.currentUser._id, mime);
+                return Resource.create(id, req.currentUser._id, mime, RESOURCE_URL.replace('@ID', id));
             }).then(function (resource) {
                 resources.push(resource);
                 if (resources.length === filesCount) {

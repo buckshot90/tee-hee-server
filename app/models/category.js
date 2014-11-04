@@ -16,9 +16,18 @@ var schema = new Schema({
     //cards:[]
 });
 
+
+schema.statics.create = function (params) {
+    var Category = mongoose.model('Category');
+    var category = new Category(params);
+    return Q.nbind(category.save, category)().then(function (results) {
+        return results[0];
+    });
+};
+
 schema.statics.qfind = function (params, fields, options) {
     var Category = mongoose.model('Category');
-    return Q.nbind(Category.find, Category)(params);
+    return Q.nbind(Category.find, Category)(params, fields, options);
 };
 
 schema.statics.qfindOne = function (params, fields, options) {

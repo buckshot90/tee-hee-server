@@ -77,7 +77,7 @@ schema.statics.create = function (username, password, email, role) {
 
 schema.statics.qfind = function (params, fields, options) {
     var User = mongoose.model('User');
-    return Q.nbind(User.find, User)(params);
+    return Q.nbind(User.find, User)(params, fields, options);
 };
 
 schema.statics.qfindOne = function (params, fields, options) {

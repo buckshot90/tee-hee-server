@@ -7,12 +7,12 @@ exports.filters = {};
 
 exports.list = function (req, res, next) {
     User.qfind({}).then(function (users) {
-        res.send(users);
+        res.send({users: users});
     }, next);
 };
 
 exports.user = function (req, res, next) {
-    res.send(req.user);
+    res.send({user: req.user});
 };
 
 

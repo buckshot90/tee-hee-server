@@ -15,6 +15,7 @@ module.exports = function (app) {
     requreRoute(app, '/auth');
     requreRoute(app, '/users');
     requreRoute(app, '/resources');
+    requreRoute(app, '/categories');
 
     require('./errors')(app);
 };
