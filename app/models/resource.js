@@ -9,14 +9,14 @@ var schema = new Schema({
     created: {type: Date, default: Date.now},
     type: {type: String, required: true},
     url: {type: String, required: true},
-    author: {type: Schema.Types.ObjectId, ref: 'User', required: true}
+    author: {type: Schema.Types.ObjectId, ref: 'User'}
 });
 
 
 schema.methods.authorize = function (user) {
     var author = this.author;
     var id = user ? user._id.toString() : '';
-    return author.role === 'admin' || author.role === 'manager' || id === author._id.toString();
+    return !author || id === author._id.toString();
 };
 
 

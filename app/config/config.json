@@ -7,10 +7,6 @@
     "options": {}
   },
   "enums": {
-    "accessTypes": [
-      "private",
-      "public"
-    ],
     "roles": {
       "values": [
         "admin",

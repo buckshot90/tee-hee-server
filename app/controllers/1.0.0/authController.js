@@ -15,7 +15,7 @@ exports.login = function (req, res, next) {
 
     return User.authenticate(username, password).then(function (user) {
         req.session.user = user._id;
-        return res.send(user);
+        return res.send({user: user});
     }).catch(function (err) {
         if (err instanceof AuthError) {
             return next(new HttpError(403, err.message));

@@ -50,9 +50,12 @@
         </pre>
 
         <a href="http://habrahabr.ru/post/181988/" target="_blank">See more...</a>
-
-
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <h4>LOGIN:</h4>
+        <h5>REQUEST:</h5>
         <ul>
             <li>POST /api/{version}/auth/login</li>
         </ul>
@@ -62,8 +65,24 @@
               "password": "&lt;password&gt;"
             }
         </pre>
-
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            {
+                "user":{
+                    "username":"oleg",
+                    "email":"oleg@teehee.com",
+                    "created":"2014-11-05T08:21:27.184Z",
+                    "role":"manager",//may be "user", "manager" or "admin"
+                    "id":"5459de076fb75d0c1ba1442a"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <h4>SIGN UP:</h4>
+        <h5>REQUEST:</h5>
         <ul>
             <li>POST /api/{version}/auth/signup</li>
         </ul>
@@ -74,22 +93,212 @@
                 "email": "&lt;email&gt;"
             }
         </pre>
-
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            {
+                "user":{
+                    "username":"oleg",
+                    "email":"oleg@teehee.com",
+                    "created":"2014-11-05T08:21:27.184Z",
+                    "role":"manager",
+                    "id":"5459de076fb75d0c1ba1442a"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <h4>LOGOUT:</h4>
+        <h5>REQUEST:</h5>
         <ul>
             <li>POST /api/{version}/auth/logout</li>
         </ul>
         <pre>            
             &lt;empty&gt;
         </pre>
-
-
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            &lt;empty&gt;
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <h4>UPLOAD:</h4>
+        <h5>REQUEST:</h5>
         <ul>
             <li>POST /api/{version}/resources/upload</li>
         </ul>
         <pre>
             &lt;Standard multipart file upload&gt;
+        </pre>
+        <h5>RESPONSE HTTP: 201</h5>
+        <pre>
+            {
+                resources:[
+                    {
+                        type: "image/jpeg"
+                        url: "/api/1.0.0/resources/5459de4200e836b01b977da4"
+                        created: "2014-11-05T08:22:26.736Z"
+                        id: "5459de4200e836b01b977da4"
+                    },
+                    ...
+                ]
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>GET UPLOADED RESOURCE:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>GET /api/{version}/resources/{id}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            &lt;Image or audio content&gt;
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>CREATE CATEGORY:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>POST /api/{version}/categories/{lang}/{id}</li>
+        </ul>
+        <pre>
+            {
+                "isPublic": &lt;true||false&gt;,//for true you must have role "admin" or "manager"
+                "label": "&lt;label&gt;",
+                "image": "&lt;resource id&gt;"
+            }
+        </pre>
+        <h5>RESPONSE HTTP: 201</h5>
+        <pre>
+            {
+                category:{
+                    "label":"fruts",
+                    "image": {
+                        type: "image/jpeg"
+                        url: "/api/1.0.0/resources/5459de4200e836b01b977da4"
+                        created: "2014-11-05T08:22:26.736Z"
+                        id: "5459de4200e836b01b977da4"
+                    },
+                    "isPublic":true,
+                    "lang":"en",
+                    "created":"2014-11-05T08:24:56.997Z",
+                    "id":"5459ded8693b04941b4ec711"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>GET CATEGORIES:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>GET /api/{version}/categories/{lang}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            {
+                categories:[
+                    {
+                        "label":"fruts",
+                        "image": {
+                            type: "image/jpeg"
+                            url: "/api/1.0.0/resources/5459de4200e836b01b977da4"
+                            created: "2014-11-05T08:22:26.736Z"
+                            id: "5459de4200e836b01b977da4"
+                        },
+                        "isPublic":true,
+                        "lang":"en",
+                        "created":"2014-11-05T08:24:56.997Z",
+                        "id":"5459ded8693b04941b4ec711"
+                    },
+                    ....
+                ]
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>GET CATEGORY:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>GET /api/{version}/categories/{lang}/{id}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            {
+                category:{
+                    "label":"fruts",
+                    "image": {
+                        type: "image/jpeg"
+                        url: "/api/1.0.0/resources/5459de4200e836b01b977da4"
+                        created: "2014-11-05T08:22:26.736Z"
+                        id: "5459de4200e836b01b977da4"
+                    },
+                    "isPublic":true,
+                    "lang":"en",
+                    "created":"2014-11-05T08:24:56.997Z",
+                    "id":"5459ded8693b04941b4ec711"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>EDIT CATEGORY:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>PUT /api/{version}/categories/{lang}/{id}</li>
+        </ul>
+        <pre>
+            {
+                "label": "&lt;label&gt;",
+                "isPublic": &lt;true||false&gt;,//for true you must have role "admin" or "manager"
+                "image":{
+                        "id":"&lt;id&gt;"
+                }// or "image":"&lt;id&gt;"
+            }
+        </pre>
+        <h5>RESPONSE HTTP: 200</h5>
+         <pre>
+            {
+                category:{
+                    "label":"fruts",
+                    "image": {
+                        type: "image/jpeg"
+                        url: "/api/1.0.0/resources/5459de4200e836b01b977da4"
+                        created: "2014-11-05T08:22:26.736Z"
+                        id: "5459de4200e836b01b977da4"
+                    },
+                    "isPublic":true,
+                    "lang":"en",
+                    "created":"2014-11-05T08:24:56.997Z",
+                    "id":"5459ded8693b04941b4ec711"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>REMOVE CATEGORY:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>DELETE /api/{version}/categories/{lang}/{id}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            &lt;empty&gt;
         </pre>
     </div>
 </div>

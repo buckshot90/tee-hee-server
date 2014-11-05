@@ -11,11 +11,16 @@ var schema = new Schema({
     author: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     label: {type: String, required: true},
     lang: {type: String, enum: config.get('enums:languages'), default: 'en', required: true},
-    image: {type: Schema.Types.ObjectId, ref: 'Resource'},
-    accessType: {type: String, enum: config.get('enums:accessTypes'), default: 'private', required: true}
+    image: {type: Schema.Types.ObjectId, ref: 'Resource', default: null},
+    isPublic: {type: Boolean, default: false, required: true}
     //cards:[]
 });
 
+schema.methods.authorize = function (user) {
+    var author = this.author.toString();
+    var id = user ? user._id.toString() : '';
+    return id === author;
+};
 
 schema.statics.create = function (params) {
     var Category = mongoose.model('Category');
@@ -40,9 +45,9 @@ schema.statics.qfindById = function (id, fields, options) {
     return Q.nbind(Category.findById, Category)(id, fields, options);
 };
 
-schema.statics.qfindByIdWithAuthor = function (id, fields, options) {
+schema.statics.qfindWithImage = function (params, fields, options) {
     var Category = mongoose.model('Category');
-    var query = Category.findById(id, fields, options).populate('author');
+    var query = Category.find(params, fields, options).populate('image');
     return Q.nbind(query.exec, query)();
 };
 

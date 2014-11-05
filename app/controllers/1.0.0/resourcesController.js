@@ -23,11 +23,11 @@ fs.exists(REPOSITORY_PATH, function (exists) {
     });
 });
 
-exports.filters={};
+exports.filters = {};
 
 exports.upload = function (req, res, next) {
     readUploadRequest(req).then(function (resources) {
-        res.send({resources: resources});
+        res.status(201).send({resources: resources});
     }, function (err) {
         if (err instanceof UploadError) {
             return next(new HttpError(400, err.message));
@@ -102,7 +102,8 @@ function readUploadRequest(req) {
             }
 
             saveFile(stream).then(function (id) {
-                return Resource.create(id, req.currentUser._id, mime, RESOURCE_URL.replace('@ID', id));
+                var author = User.authorize('manager', req.currentUser) ? null : req.currentUser._id;
+                return createResource(id, author, mime);
             }).then(function (resource) {
                 resources.push(resource);
                 if (resources.length === filesCount) {
@@ -135,6 +136,10 @@ function saveFile(stream) {
     });
 
     return defer.promise;
+}
+
+function createResource(id, author, type) {
+    return Resource.create(id, author, type, RESOURCE_URL.replace('@ID', id));
 }
 
 function isImage(mime) {

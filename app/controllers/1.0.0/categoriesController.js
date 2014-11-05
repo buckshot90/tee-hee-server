@@ -11,40 +11,54 @@ var Q = require('q');
 exports.filters = {};
 
 exports.list = function (req, res, next) {
-    var query = {accessType: 'public', lang: req.params.lang};
+    var query = {isPublic: true, lang: req.params.lang};
 
     if (req.session.user) {
         query = {$or: [query, {author: req.session.user}]};
     }
 
-    Category.qfind(query).then(function (categories) {
+    Category.qfindWithImage(query).then(function (categories) {
         res.send({categories: categories});
     }, next);
 };
 
 exports.category = function (req, res, next) {
-    next(new Error('Not Implemented'));
+    if (req.category.accessType === 'public' ||
+        req.category.author.toString() === req.session.user.toString() ||
+        User.authorize('manager', req.currentUser)) {
+        return res.send({category: req.category});
+    }
+    return next(403);
 };
 
-exports.create = function (req, res, next) {
-    var author = req.currentUser._id;
+exports.edit = function (req, res, next) {
+    var user = req.currentUser;
+    var isPublic = parseBool(req.body.isPublic);
     var label = req.body.label;
-    var accessType = req.body.accessType || 'private';
     var image = req.body.image;
-    var lang = req.body.lang || 'en';
+    var category = req.category;
 
-    if (accessType === 'public' && !User.authorize('manager', req.currentUser)) {
-        return next(new HttpError(403));
+
+    if (!User.authorize('manager')) {
+        if (!category.authorize(user) || isPublic) {
+            return next(403);
+        }
     }
 
-    Category.create({
-        author: author,
-        label: label,
-        accessType: accessType,
-        image: image,
-        lang: lang
-    }).then(function (category) {
-        res.status(201).send(category);
+    try {
+        category.image = parseImage(image);
+    } catch (e) {
+        return next(new HttpError(400, 'Bad Image Id'));
+    }
+
+    category.isPublic = isPublic;
+    category.label = label;
+
+    Q.nbind(category.save, category)().then(function (result) {
+        var category = result[0];
+        return Q.nbind(Category.populate, Category)(category, {path: 'image'}).then(function (category) {
+            res.send({category: category});
+        });
     }, function (err) {
         if (err instanceof ValidationError) {
             if (_.isObject(err.errors)) {
@@ -57,12 +71,95 @@ exports.create = function (req, res, next) {
     });
 };
 
-exports.filters.mapModel = function (req, res, next) {
-    next(new Error('Not Implemented'));
+exports.create = function (req, res, next) {
+    var author = req.currentUser._id;
+    var lang = req.params.lang;
+    var label = req.body.label;
+    var isPublic = parseBool(req.body.isPublic);
+    var image = req.body.image;
+
+
+    if (isPublic && !User.authorize('manager', req.currentUser)) {
+        return next(new HttpError(403));
+    }
+
+    try {
+        image = parseImage(image);
+    } catch (e) {
+        return next(new HttpError(400, 'Bad Image Id'));
+    }
+
+    Category.create({
+        author: author,
+        label: label,
+        isPublic: isPublic,
+        image: image,
+        lang: lang
+    }).then(function (category) {
+        return Q.nbind(Category.populate, Category)(category, {path: 'image'}).then(function (category) {
+            res.status(201).send({category: category});
+        });
+    }, function (err) {
+        if (err instanceof ValidationError) {
+            if (_.isObject(err.errors)) {
+                var first = err.errors[Object.keys(err.errors)[0]] || {};
+                return next(new HttpError(400, first.message));
+            }
+            return next(new HttpError(400, err.message));
+        }
+        return next(err);
+    });
 };
+
+exports.remove = function (req, res, next) {
+    var category = req.category;
+
+    if (!User.authorize('manager', req.currentUser)) {
+        if (!category.authorize(req.currentUser) || category.isPublic) {
+            return next(403);
+        }
+    }
+
+    category.remove(function (err) {
+        if (err)return next(err);
+        res.end();
+    });
+};
+
+exports.filters.mapModel = function (req, res, next) {
+    Q(req).then(function (req) {
+        try {
+            return new ObjectID(req.params.id);
+        } catch (e) {
+            throw new HttpError(404, 'Category Not Found');
+        }
+    }).then(Category.qfindById).then(function (category) {
+        if (!category)throw new HttpError(404, 'Category Not Found');
+        req.category = category;
+        next();
+    }).catch(next);
+};
+
 exports.filters.checkLang = function (req, res, next) {
     var langs = config.get('enums:languages:values');
     var lang = req.params.lang || '';
     if (langs.indexOf(lang.toLowerCase()) === -1)return next(404);
     next();
 };
+
+
+
+
+function parseBool(val) {
+    return String(val).toLowerCase() === 'true';
+}
+
+function parseImage(image) {
+    if (_.isObject(image)) {
+        return new ObjectID(image.id);
+    } else if (_.isString(image)) {
+        return new ObjectID(image);
+    } else {
+        return null;
+    }
+}
