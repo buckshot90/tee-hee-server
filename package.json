@@ -18,9 +18,12 @@
     "compression": "*",
     "extend": "*",
     "ejs-locals": "*",
-    "connect-mongo":"*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "connect-mongo": "*",
     "underscore": "*",
-    "connect-busboy": "*"
+    "connect-busboy": "*",
+    "q": "*"
   },
   "main": "app.js",
   "author": "",
