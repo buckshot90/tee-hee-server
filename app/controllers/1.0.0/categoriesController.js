@@ -1,5 +1,6 @@
 var Category = require('../../models/category');
 var User = require('../../models/user');
+var Resource = require('../../models/resource');
 var HttpError = require('../../models/errors/httpError');
 var ValidationError = require('../../models/errors/validationError');
 var config = require('../../config');
@@ -37,7 +38,7 @@ exports.edit = function (req, res, next) {
     var label = req.body.label;
     var image = req.body.image;
     var category = req.category;
-
+    var imageBound = null;
 
     if (!User.authorize('manager')) {
         if (!category.authorize(user) || isPublic) {
@@ -45,21 +46,18 @@ exports.edit = function (req, res, next) {
         }
     }
 
-    try {
-        category.image = parseImage(image);
-    } catch (e) {
-        return next(new HttpError(400, 'Bad Image Id'));
-    }
+    checkResource(image, req.currentUser).then(function (image) {
+        category.isPublic = isPublic;
+        category.label = label;
+        category.image = image;
+        imageBound = image;
 
-    category.isPublic = isPublic;
-    category.label = label;
-
-    Q.nbind(category.save, category)().then(function (result) {
-        var category = result[0];
-        return Q.nbind(Category.populate, Category)(category, {path: 'image'}).then(function (category) {
-            res.send({category: category});
-        });
-    }, function (err) {
+        return Q.nbind(category.save, category)();
+    }).then(function () {
+        category = category.toJSON();
+        category.image = imageBound;
+        res.send({category: category});
+    }).catch(function (err) {
         if (err instanceof ValidationError) {
             if (_.isObject(err.errors)) {
                 var first = err.errors[Object.keys(err.errors)[0]] || {};
@@ -77,29 +75,26 @@ exports.create = function (req, res, next) {
     var label = req.body.label;
     var isPublic = parseBool(req.body.isPublic);
     var image = req.body.image;
-
+    var imageBound = null;
 
     if (isPublic && !User.authorize('manager', req.currentUser)) {
         return next(new HttpError(403));
     }
 
-    try {
-        image = parseImage(image);
-    } catch (e) {
-        return next(new HttpError(400, 'Bad Image Id'));
-    }
-
-    Category.create({
-        author: author,
-        label: label,
-        isPublic: isPublic,
-        image: image,
-        lang: lang
-    }).then(function (category) {
-        return Q.nbind(Category.populate, Category)(category, {path: 'image'}).then(function (category) {
-            res.status(201).send({category: category});
+    checkResource(image, req.currentUser).then(function (image) {
+        imageBound = image;
+        return Category.create({
+            author: author,
+            label: label,
+            isPublic: isPublic,
+            image: image,
+            lang: lang
         });
-    }, function (err) {
+    }).then(function (category) {
+        category = category.toJSON();
+        category.image = imageBound;
+        res.status(201).send({category: category});
+    }).catch(function (err) {
         if (err instanceof ValidationError) {
             if (_.isObject(err.errors)) {
                 var first = err.errors[Object.keys(err.errors)[0]] || {};
@@ -148,8 +143,6 @@ exports.filters.checkLang = function (req, res, next) {
 };
 
 
-
-
 function parseBool(val) {
     return String(val).toLowerCase() === 'true';
 }
@@ -157,9 +150,31 @@ function parseBool(val) {
 function parseImage(image) {
     if (_.isObject(image)) {
         return new ObjectID(image.id);
-    } else if (_.isString(image)) {
+    } else if (image && _.isString(image)) {
         return new ObjectID(image);
     } else {
         return null;
     }
+}
+
+function checkResource(image, user) {
+    return Q(image).then(function (image) {
+        try {
+            return parseImage(image);
+        } catch (e) {
+            throw new HttpError(400, 'Bad Image Id');
+        }
+    }).then(function (id) {
+        if (!id)return null;
+
+        return Resource.qfindByIdWithAuthor(id).then(function (resource) {
+            if (!resource) {
+                throw new HttpError(404, 'Image does not exists');
+            }
+            if (!resource.authorize(user)) {
+                throw new HttpError(403);
+            }
+            return resource;
+        });
+    });
 }

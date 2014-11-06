@@ -38,7 +38,7 @@ exports.catchAll = function (err, req, res, next) {
     res.removeHeader('Content-Type');
 
     if (!IS_DEVELOPMENT)delete err.stack;
-    res.status(err.status).send(err);
+    res.status(err.status).send({error: err});
 };
 
 
