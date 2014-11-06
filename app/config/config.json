@@ -3,7 +3,7 @@
   "port": 3000,
   "logDir": "./logs",
   "mongoose": {
-    "uri": "mongodb://localhost/teehee",
+    "uri": "mongodb://api:!tavrikA17TeeHee@localhost/teehee",
     "options": {}
   },
   "enums": {
