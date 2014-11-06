@@ -54,32 +54,22 @@ exports.signUp = function (req, res, next) {
 
 exports.filters.authorize = function (accessLevel) {
     return function (req, res, next) {
-        if (!req.session.user) return next(new HttpError(401));
-
-        restoreUser(req.session.user).then(function (user) {
-            if (User.authorize(accessLevel, user)) {
-                req.currentUser = user;
-                return next();
-            }
-            throw new HttpError(403);
-        }).catch(function (err) {
-            if (err instanceof AuthError) {
-                return next(new HttpError(403, err.message));
-            }
-            return next(err);
-        });
+        if ((req.currentUser instanceof User) && User.authorize(accessLevel, req.currentUser)) {
+            return next();
+        }
+        return next(403);
     }
 };
 
 exports.filters.mapCurrentUser = function (req, res, next) {
-    if (!req.session.user) return next();
+    if (!req.session.user || (req.currentUser instanceof User)) return next();
 
     restoreUser(req.session.user).then(function (user) {
         req.currentUser = user;
         return next();
     }).catch(function (err) {
         if (err instanceof AuthError) {
-            return next(new HttpError(403, err.message));
+            return next(new HttpError(400, err.message));
         }
         return next(err);
     });

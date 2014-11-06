@@ -1,5 +1,4 @@
 var Q = require('q');
-var crypto = require('crypto');
 var config = require('../config/index');
 var mongoose = require('../libs/mongoose');
 
@@ -17,9 +16,7 @@ var schema = new Schema({
 });
 
 schema.methods.authorize = function (user) {
-    var author = this.author.toString();
-    var id = user ? user._id.toString() : '';
-    return id === author;
+    return this.isPublic || (user && user._id.toString() === this.author.toString());
 };
 
 schema.statics.create = function (params) {

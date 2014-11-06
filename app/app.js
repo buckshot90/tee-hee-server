@@ -17,6 +17,8 @@ var PUBLIC_DIR = path.join(__dirname, '../public/');
 
 var app = express();
 
+app.set('strict routing', true);
+
 //app.use(compress());
 app.use(favicon(path.normalize(PUBLIC_DIR + 'favicon.ico')));
 app.use(express.static(PUBLIC_DIR));
@@ -30,10 +32,6 @@ app.use(session(extend(config.get("session"), {store: new MongoStore({db: mongoo
 
 app.get('/', function (req, res) {
     res.sendFile(PUBLIC_DIR + 'index.html');
-});
-
-app.get('/upload', function (req, res) {
-    res.sendFile(PUBLIC_DIR + 'upload.html');
 });
 
 //build routs

@@ -1,5 +1,6 @@
 var path = require('path');
 var config = require('../config');
+var authFilters = require('../controllers/1.0.0/authController').filters;
 
 var API_VERSION = config.get('apiVersion');
 var BASE_URL = '/api/' + API_VERSION;
@@ -12,6 +13,8 @@ module.exports = function (app) {
 
 
     //API routes
+    app.use(BASE_URL, authFilters.mapCurrentUser);
+
     requreRoute(app, '/auth');
     requreRoute(app, '/users');
     requreRoute(app, '/resources');

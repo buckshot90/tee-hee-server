@@ -53,7 +53,8 @@
         "image/jpeg",
         "image/png",
         "image/gif"
-      ]
+      ],
+      "audio": ["audio/mp3"]
     },
     "path": "./resources",
     "busboy": {

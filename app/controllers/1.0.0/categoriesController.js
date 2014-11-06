@@ -15,7 +15,7 @@ exports.list = function (req, res, next) {
     var query = {isPublic: true, lang: req.params.lang};
 
     if (req.session.user) {
-        query = {$or: [query, {author: req.session.user}]};
+        query = {$or: [query, {author: req.session.user, lang: query.lang}]};
     }
 
     Category.qfindWithImage(query).then(function (categories) {
@@ -24,27 +24,19 @@ exports.list = function (req, res, next) {
 };
 
 exports.category = function (req, res, next) {
-    if (req.category.accessType === 'public' ||
-        req.category.author.toString() === req.session.user.toString() ||
-        User.authorize('manager', req.currentUser)) {
-        return res.send({category: req.category});
-    }
-    return next(403);
+    var category = req.category;
+    Q.nbind(category.populate, category)('image').then(function (category) {
+        return res.send({category: category});
+    }, next);
 };
 
 exports.edit = function (req, res, next) {
     var user = req.currentUser;
-    var isPublic = parseBool(req.body.isPublic);
     var label = req.body.label;
     var image = req.body.image;
     var category = req.category;
     var imageBound = null;
-
-    if (!User.authorize('manager')) {
-        if (!category.authorize(user) || isPublic) {
-            return next(403);
-        }
-    }
+    var isPublic = User.authorize('manager', req.currentUser) ? parseBool(req.body.isPublic) : false;
 
     checkResource(image, req.currentUser).then(function (image) {
         category.isPublic = isPublic;
@@ -73,13 +65,9 @@ exports.create = function (req, res, next) {
     var author = req.currentUser._id;
     var lang = req.params.lang;
     var label = req.body.label;
-    var isPublic = parseBool(req.body.isPublic);
     var image = req.body.image;
     var imageBound = null;
-
-    if (isPublic && !User.authorize('manager', req.currentUser)) {
-        return next(new HttpError(403));
-    }
+    var isPublic = User.authorize('manager', req.currentUser) ? parseBool(req.body.isPublic) : false;
 
     checkResource(image, req.currentUser).then(function (image) {
         imageBound = image;
@@ -108,13 +96,6 @@ exports.create = function (req, res, next) {
 
 exports.remove = function (req, res, next) {
     var category = req.category;
-
-    if (!User.authorize('manager', req.currentUser)) {
-        if (!category.authorize(req.currentUser) || category.isPublic) {
-            return next(403);
-        }
-    }
-
     category.remove(function (err) {
         if (err)return next(err);
         res.end();
@@ -129,7 +110,12 @@ exports.filters.mapModel = function (req, res, next) {
             throw new HttpError(404, 'Category Not Found');
         }
     }).then(Category.qfindById).then(function (category) {
-        if (!category)throw new HttpError(404, 'Category Not Found');
+        if (!category || category.lang != req.params.lang) {
+            throw new HttpError(404, 'Category Not Found');
+        } else if (!User.authorize('manager', req.currentUser) && !category.authorize(req.currentUser)) {
+            throw new HttpError(403);
+        }
+
         req.category = category;
         next();
     }).catch(next);
@@ -138,7 +124,7 @@ exports.filters.mapModel = function (req, res, next) {
 exports.filters.checkLang = function (req, res, next) {
     var langs = config.get('enums:languages:values');
     var lang = req.params.lang || '';
-    if (langs.indexOf(lang.toLowerCase()) === -1)return next(404);
+    if (langs.indexOf(lang.toLowerCase()) === -1)return next(new HttpError(404, 'Language Not Found'));
     next();
 };
 

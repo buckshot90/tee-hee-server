@@ -13,8 +13,9 @@ var UploadError = require('../../models/errors/uploadError');
 var ValidationError = require('../../models/errors/validationError');
 
 var IMAGES_MIMES = config.get('upload:mimes:images');
+var AUDIO_MIMES = config.get('upload:mimes:audio');
 var REPOSITORY_PATH = config.get('upload:path');
-var RESOURCE_URL = '/api/1.0.0/resources/@ID';
+var RESOURCE_URL = '/api/' + config.get('apiVersion') + '/resources/@ID';
 
 
 fs.exists(REPOSITORY_PATH, function (exists) {
@@ -92,11 +93,10 @@ function readUploadRequest(req) {
 
     req.busboy.on('file', function onFile(fieldname, stream, filename, encoding, mime) {
         filesCount++;
-        console.log(defer.promise.inspect());
 
         if (!defer.promise.isRejected()) {
 
-            if (!isImage(mime)) {
+            if (!isImage(mime) && !isAudio(mime)) {
                 defer.reject(new UploadError('Wrong MIME type'));
                 return;
             }
@@ -106,7 +106,7 @@ function readUploadRequest(req) {
                 return createResource(id, author, mime);
             }).then(function (resource) {
                 resources.push(resource);
-                if (resources.length === filesCount) {
+                if (resources.length >= filesCount) {
                     defer.resolve(resources);
                 }
             }).catch(defer.reject);
@@ -144,4 +144,8 @@ function createResource(id, author, type) {
 
 function isImage(mime) {
     return IMAGES_MIMES.indexOf(mime) != -1;
+}
+
+function isAudio(mime) {
+    return AUDIO_MIMES.indexOf(mime) != -1;
 }
