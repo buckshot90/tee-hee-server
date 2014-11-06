@@ -13,7 +13,7 @@ module.exports = function (app) {
 
 
     //API routes
-    app.use(BASE_URL, authFilters.mapCurrentUser);
+    app.use(BASE_URL, authFilters.identification);
 
     requreRoute(app, '/auth');
     requreRoute(app, '/users');

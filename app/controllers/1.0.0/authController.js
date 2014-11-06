@@ -52,16 +52,8 @@ exports.signUp = function (req, res, next) {
     });
 };
 
-exports.filters.authorize = function (accessLevel) {
-    return function (req, res, next) {
-        if ((req.currentUser instanceof User) && User.authorize(accessLevel, req.currentUser)) {
-            return next();
-        }
-        return next(403);
-    }
-};
 
-exports.filters.mapCurrentUser = function (req, res, next) {
+exports.filters.identification = function (req, res, next) {
     if (!req.session.user || (req.currentUser instanceof User)) return next();
 
     restoreUser(req.session.user).then(function (user) {
@@ -75,6 +67,14 @@ exports.filters.mapCurrentUser = function (req, res, next) {
     });
 };
 
+exports.filters.authorize = function (accessLevel) {
+    return function (req, res, next) {
+        if ((req.currentUser instanceof User) && User.authorize(accessLevel, req.currentUser)) {
+            return next();
+        }
+        return next(403);
+    }
+};
 
 function restoreUser(id) {
     return Q(id).then(function () {
