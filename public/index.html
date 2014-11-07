@@ -201,7 +201,7 @@
         <h4>GET CATEGORIES:</h4>
         <h5>REQUEST:</h5>
         <ul>
-            <li>GET /api/{version}/categories/{lang}</li>
+            <li>GET /api/{version}/categories/{lang}/</li>
         </ul>
         <h5>RESPONSE HTTP: 200</h5>
         <pre>
@@ -295,6 +295,160 @@
         <h5>REQUEST:</h5>
         <ul>
             <li>DELETE /api/{version}/categories/{lang}/{id}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            &lt;empty&gt;
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>CREATE CARD:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>POST /api/{version}/categories/{lang}/{category id}<b class="red">/</b></li>
+        </ul>
+        <pre>
+            {
+                "label": "&lt;label&gt;",
+                "image": "&lt;resource id&gt;",
+                "audio": "&lt;resource id&gt;"
+            }
+        </pre>
+        <h5>RESPONSE HTTP: 201</h5>
+        <pre>
+            {
+                "card": {
+                    "label": "Apple",
+                    "audio": {
+                        "type": "audio/mp3",
+                        "url": "/api/1.0.0/resources/545cb4658bb2dd2c1d45bd90",
+                        "created": "2014-11-07T12:00:37.048Z",
+                        "id": "545cb4658bb2dd2c1d45bd90"
+                    },
+                    "image": {
+                        "type": "image/jpeg",
+                        "url": "/api/1.0.0/resources/545b946b2863d66c1d6d9775",
+                        "created": "2014-11-06T15:31:55.443Z",
+                        "id": "545b946b2863d66c1d6d9775"
+                    },
+                    "created": "2014-11-07T12:12:42.418Z",
+                    "id": "545cb73a2dde67281f909fca"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>GET CARDS:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>GET /api/{version}/categories/{lang}/{category id}<b class="red">/</b></li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+         <pre>
+            {
+                "cards": [
+                    {
+                        "label": "Apple",
+                        "audio": {
+                            "type": "audio/mp3",
+                            "url": "/api/1.0.0/resources/545cb4658bb2dd2c1d45bd90",
+                            "created": "2014-11-07T12:00:37.048Z",
+                            "id": "545cb4658bb2dd2c1d45bd90"
+                        },
+                        "image": {
+                            "type": "image/jpeg",
+                            "url": "/api/1.0.0/resources/545b946b2863d66c1d6d9775",
+                            "created": "2014-11-06T15:31:55.443Z",
+                            "id": "545b946b2863d66c1d6d9775"
+                        },
+                        "created": "2014-11-07T12:12:42.418Z",
+                        "id": "545cb73a2dde67281f909fca"
+                    },
+                    ...
+                ]
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>GET CARD:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>GET /api/{version}/categories/{lang}/{category id}/{card id}</li>
+        </ul>
+        <h5>RESPONSE HTTP: 200</h5>
+        <pre>
+            {
+                "card": {
+                    "label": "Apple",
+                    "audio": {
+                        "type": "audio/mp3",
+                        "url": "/api/1.0.0/resources/545cb4658bb2dd2c1d45bd90",
+                        "created": "2014-11-07T12:00:37.048Z",
+                        "id": "545cb4658bb2dd2c1d45bd90"
+                    },
+                    "image": {
+                        "type": "image/jpeg",
+                        "url": "/api/1.0.0/resources/545b946b2863d66c1d6d9775",
+                        "created": "2014-11-06T15:31:55.443Z",
+                        "id": "545b946b2863d66c1d6d9775"
+                    },
+                    "created": "2014-11-07T12:12:42.418Z",
+                    "id": "545cb73a2dde67281f909fca"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>EDIT CARD:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>PUT /api/{version}/categories/{lang}/{category id}/{card id}</li>
+        </ul>
+        <pre>
+            {
+                "label": "&lt;label&gt;",
+                "image": "&lt;resource id&gt;",
+                "audio": "&lt;resource id&gt;"
+            }
+        </pre>
+        <h5>RESPONSE HTTP: 201</h5>
+        <pre>
+            {
+                "card": {
+                    "label": "Apple",
+                    "audio": {
+                        "type": "audio/mp3",
+                        "url": "/api/1.0.0/resources/545cb4658bb2dd2c1d45bd90",
+                        "created": "2014-11-07T12:00:37.048Z",
+                        "id": "545cb4658bb2dd2c1d45bd90"
+                    },
+                    "image": {
+                        "type": "image/jpeg",
+                        "url": "/api/1.0.0/resources/545b946b2863d66c1d6d9775",
+                        "created": "2014-11-06T15:31:55.443Z",
+                        "id": "545b946b2863d66c1d6d9775"
+                    },
+                    "created": "2014-11-07T12:12:42.418Z",
+                    "id": "545cb73a2dde67281f909fca"
+                }
+            }
+        </pre>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4>REMOVE CARD:</h4>
+        <h5>REQUEST:</h5>
+        <ul>
+            <li>DELETE /api/{version}/categories/{lang}/{category id}/{card id}</li>
         </ul>
         <h5>RESPONSE HTTP: 200</h5>
         <pre>

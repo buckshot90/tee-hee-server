@@ -15,10 +15,9 @@ var schema = new Schema({
 });
 
 schema.methods.authorize = function (user) {
-    var author = this.author.toString();
-    var id = user ? user._id.toString() : '';
-    return id === author;
+    return user && user._id.toString() === this.author.toString();
 };
+
 
 schema.statics.create = function (params) {
     var Card = mongoose.model('Card');
