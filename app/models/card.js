@@ -55,7 +55,7 @@ schema.options.toJSON = {
         delete ret._id;
         delete ret.__v;
         delete ret.author;
-        delete ret.category;
+        //delete ret.category;
         return ret;
     }
 };
