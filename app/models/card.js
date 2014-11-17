@@ -52,11 +52,9 @@ schema.statics.qfindAndPopulate = function (params, popParams) {
 schema.options.toJSON = {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
-        ret.categoryId = ret.category._id || ret.category;
         delete ret._id;
         delete ret.__v;
         delete ret.author;
-        delete ret.category;
         return ret;
     }
 };
