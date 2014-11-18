@@ -27,6 +27,8 @@ fs.exists(REPOSITORY_PATH, function (exists) {
 exports.filters = {};
 
 exports.upload = function (req, res, next) {
+    if (!req.busboy)return next(500);
+
     readUploadRequest(req).then(function (resources) {
         res.status(201).send({resources: resources});
     }, function (err) {
